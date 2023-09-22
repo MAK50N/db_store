@@ -10,8 +10,8 @@ class Order(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     count = Column(Integer)
-    user = relationship("User", back_populates="orders")
-    product = relationship("Product", back_populates="orders")
+    user = relationship("User", backref="orders")
+    product = relationship("Product", backref="orders")
 
 
 class User(Base):
@@ -21,7 +21,6 @@ class User(Base):
     phone = Column(String)
     address = Column(String)
     email = Column(String)
-    orders = relationship('Order', back_populates='user')
 
 class Product(Base):
     __tablename__ = "products"
@@ -29,4 +28,3 @@ class Product(Base):
     name = Column(String)
     seller = Column(String)
     price = Column(Float)
-    orders = relationship('Order', back_populates='product')
