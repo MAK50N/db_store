@@ -2,6 +2,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, S
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import sessionmaker
 from tables import Order, User, Product
+from fastapi.responses import JSONResponse
 
 class Database:
     def __init__(self):
@@ -119,3 +120,98 @@ class Database:
         session.commit()
         session.close()
         return product
+
+    def add_order(self, user, product, count):
+        Session = sessionmaker(self.engine)
+        session = Session()
+
+        order = Order(user=user, product=product, count=count)
+        session.add(order)
+        session.commit()
+        session.close()
+        return order
+
+    def update_user(self, user_id, data):
+        Session = sessionmaker(self.engine)
+        session = Session()
+
+        user = session.query(User).filter(User.id == user_id).first()
+        if user == None:
+            return "Пользователь не найден"
+
+        user.username = data['username']
+        user.phone = data['phone']
+        user.address = data['address']
+        user.email = data['email']
+        session.commit()
+        session.refresh(user)
+        return user
+
+    def update_product(self, product_id, data):
+        Session = sessionmaker(self.engine)
+        session = Session()
+
+        product = session.query(Product).filter(Product.id == product_id).first()
+        if product == None:
+            return "Продукт не найден"
+
+        product.name = data['name']
+        product.seller = data['seller']
+        product.price = data['price']
+        session.commit()
+        session.refresh(product)
+        return product
+
+    def update_order(self, order_id, data):
+        Session = sessionmaker(self.engine)
+        session = Session()
+
+        order = session.query(Order).filter(Order.id == order_id).first()
+        if order == None:
+            return "Заказ не найден"
+
+        order.user = data['user']
+        order.product = data['product']
+        order.count = data['count']
+        session.commit()
+        session.refresh(order)
+        return order
+
+    def delete_user(self, user_id):
+        Session = sessionmaker(self.engine)
+        session = Session()
+
+        user = session.query(User).filter(User.id == user_id).first()
+
+        if user == None:
+            return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
+
+        session.delete(user)
+        session.commit()
+        session.close()
+
+    def delete_product(self, product_id):
+        Session = sessionmaker(self.engine)
+        session = Session()
+
+        product = session.query(Product).filter(Product.id == product_id).first()
+
+        if product == None:
+            return JSONResponse(status_code=404, content={"message": "Продукт не найден"})
+
+        session.delete(product)
+        session.commit()
+        session.close()
+
+    def delete_order(self, order_id):
+        Session = sessionmaker(self.engine)
+        session = Session()
+
+        order = session.query(Order).filter(Order.id == order_id).first()
+
+        if order == None:
+            return JSONResponse(status_code=404, content={"message": "Заказ не найден"})
+
+        session.delete(order)
+        session.commit()
+        session.close()
