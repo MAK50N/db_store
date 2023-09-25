@@ -66,7 +66,7 @@ class Database:
         session.close()
 
     def get_users(self, limit, offset, city):
-        Session = sessionmaker()
+        Session = sessionmaker(self.engine)
         session = Session()
         results = ''
         if city:
@@ -77,7 +77,7 @@ class Database:
         return results
 
     def get_products(self, limit, offset, seller):
-        Session = sessionmaker()
+        Session = sessionmaker(self.engine)
         session = Session()
         results = ''
         if seller:
@@ -89,7 +89,7 @@ class Database:
         return results
 
     def get_orders(self, limit, offset, user_id):
-        Session = sessionmaker()
+        Session = sessionmaker(self.engine)
         session = Session()
 
         results = ''
@@ -102,7 +102,7 @@ class Database:
         return results
 
     def add_user(self, username, phone, address, email):
-        Session = sessionmaker()
+        Session = sessionmaker(self.engine)
         session = Session()
 
         user = User(username=username, phone=phone, address=address, email=email)
@@ -112,7 +112,7 @@ class Database:
         return user
 
     def add_product(self, name, seller, price):
-        Session = sessionmaker()
+        Session = sessionmaker(self.engine)
         session = Session()
 
         product = Product(name=name, seller=seller, price=price)
