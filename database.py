@@ -121,9 +121,17 @@ class Database:
         session.close()
         return product
 
-    def add_order(self, user, product, count):
+    def add_order(self, user_id, product_id, count):
         Session = sessionmaker(self.engine)
         session = Session()
+
+        user = session.query(User).filter(User.id == user_id).first()
+        if user == None:
+            JSONResponse(status_code=404, content={'Пользователь не найден'})
+
+        product = session.query(Product).filter(Product.id == product_id).first()
+        if product == None:
+            JSONResponse(status_code=404, content={'Продукт не найден'})
 
         order = Order(user=user, product=product, count=count)
         session.add(order)
@@ -137,7 +145,7 @@ class Database:
 
         user = session.query(User).filter(User.id == user_id).first()
         if user == None:
-            return "Пользователь не найден"
+            JSONResponse(status_code=404, content={'Пользователь не найден'})
 
         user.username = username
         user.phone = phone
@@ -153,7 +161,7 @@ class Database:
 
         product = session.query(Product).filter(Product.id == product_id).first()
         if product == None:
-            return "Продукт не найден"
+            JSONResponse(status_code=404, content={'Продукт не найден'})
 
         product.name = name
         product.seller = seller
@@ -162,13 +170,21 @@ class Database:
         session.refresh(product)
         return product
 
-    def update_order(self, order_id, user, product, count):
+    def update_order(self, order_id, user_id, product_id, count):
         Session = sessionmaker(self.engine)
         session = Session()
 
         order = session.query(Order).filter(Order.id == order_id).first()
         if order == None:
             return "Заказ не найден"
+
+        user = session.query(User).filter(User.id == user_id).first()
+        if user == None:
+            JSONResponse(status_code=404, content={'Пользователь не найден'})
+
+        product = session.query(Product).filter(Product.id == product_id).first()
+        if product == None:
+            JSONResponse(status_code=404, content={'Продукт не найден'})
 
         order.user = user
         order.product = product

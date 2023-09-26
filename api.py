@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI
 from database import Database
 import uvicorn as uv
 from pydantic import BaseModel
@@ -43,8 +43,8 @@ async def add_product(product: Product):
     return db.add_product(product.name, product.seller, product.price)
 
 @api.post("/order/")
-async def add_order(user: User, product: Product, count: int):
-    return db.add_order(user, product, count)
+async def add_order(user_id: int, product_id: int, count: int):
+    return db.add_order(user_id, product_id, count)
 
 @api.put("/upd_users/{user_id}")
 def update_user(user_id: int, user: User):
@@ -55,8 +55,8 @@ def update_product(product_id: int, product: Product):
     return db.update_product(product_id, product.name, product.seller, product.price)
 
 @api.put("/upd_orders/{order_id}")
-def update_order(order_id: int, user: User, product: Product, count: int):
-    return db.update_order(order_id, user, product, count)
+def update_order(order_id: int, user_id: int, product_id: int, count: int):
+    return db.update_order(order_id, user_id, product_id, count)
 
 @api.delete("/d_user/{user_id}")
 async def delete_user(user_id: int):
