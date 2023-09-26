@@ -131,7 +131,7 @@ class Database:
         session.close()
         return order
 
-    def update_user(self, user_id, data):
+    def update_user(self, user_id, username, phone, address, email):
         Session = sessionmaker(self.engine)
         session = Session()
 
@@ -139,15 +139,15 @@ class Database:
         if user == None:
             return "Пользователь не найден"
 
-        user.username = data['username']
-        user.phone = data['phone']
-        user.address = data['address']
-        user.email = data['email']
+        user.username = username
+        user.phone = phone
+        user.address = address
+        user.email = email
         session.commit()
         session.refresh(user)
         return user
 
-    def update_product(self, product_id, data):
+    def update_product(self, product_id, name, seller, price):
         Session = sessionmaker(self.engine)
         session = Session()
 
@@ -155,14 +155,14 @@ class Database:
         if product == None:
             return "Продукт не найден"
 
-        product.name = data['name']
-        product.seller = data['seller']
-        product.price = data['price']
+        product.name = name
+        product.seller = seller
+        product.price = price
         session.commit()
         session.refresh(product)
         return product
 
-    def update_order(self, order_id, data):
+    def update_order(self, order_id, user, product, count):
         Session = sessionmaker(self.engine)
         session = Session()
 
@@ -170,9 +170,9 @@ class Database:
         if order == None:
             return "Заказ не найден"
 
-        order.user = data['user']
-        order.product = data['product']
-        order.count = data['count']
+        order.user = user
+        order.product = product
+        order.count = count
         session.commit()
         session.refresh(order)
         return order

@@ -39,24 +39,24 @@ async def add_user(user: User):
     return db.add_user(user.username, user.phone, user.address, user.email)
 
 @api.post("/product/")
-async def add_product(name: str, seller: str, price: float):
-    return db.add_product(name, seller, price)
+async def add_product(product: Product):
+    return db.add_product(product.name, product.seller, product.price)
 
 @api.post("/order/")
 async def add_order(user: User, product: Product, count: int):
     return db.add_order(user, product, count)
 
 @api.put("/upd_users/{user_id}")
-def update_user(user_id: int, data: Body()):
-    return db.update_user(user_id, data)
+def update_user(user_id: int, user: User):
+    return db.update_user(user_id, user.username, user.phone, user.address, user.email)
 
 @api.put("/upd_products/{product_id}")
-def update_product(product_id: int, data: Body()):
-    return db.update_product(product_id, data)
+def update_product(product_id: int, product: Product):
+    return db.update_product(product_id, product.name, product.seller, product.price)
 
 @api.put("/upd_orders/{order_id}")
-def update_order(order_id: int, data: Body()):
-    return db.update_order(order_id, data)
+def update_order(order_id: int, user: User, product: Product, count: int):
+    return db.update_order(order_id, user, product, count)
 
 @api.delete("/d_user/{user_id}")
 async def delete_user(user_id: int):
