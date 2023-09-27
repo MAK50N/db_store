@@ -1,15 +1,16 @@
-from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, String, ForeignKey, select
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, Float, String, ForeignKey
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.orm import sessionmaker
 from tables import Order, User, Product
 from fastapi.responses import JSONResponse
+
 
 class Database:
     def __init__(self):
         self.DatabaseUri = f"postgresql://postgres:1@localhost:5432/store"
         self.engine = create_engine(self.DatabaseUri)
 
-
+    # Создае базу данных и таблицы юзеров, продукты и заказов
     def create_database(self):
         if database_exists(self.DatabaseUri) is False:
             create_database(self.DatabaseUri)
@@ -17,11 +18,11 @@ class Database:
         metadata = MetaData()
         users_table = Table('users', metadata,
                             Column("id", Integer, primary_key=True),
-                                  Column("username", String),
-                                  Column("phone", String),
-                                  Column("address", String),
-                                  Column("email",String)
-                             )
+                            Column("username", String),
+                            Column("phone", String),
+                            Column("address", String),
+                            Column("email", String)
+                            )
 
         product_table = Table('products', metadata,
                               Column("id", Integer, primary_key=True),
@@ -65,6 +66,8 @@ class Database:
         session.commit()
         session.close()
 
+    # Получает список юзеров определенного лимита, начиная с какой либо строки, и если передан city, переданной через пременную offset,
+    # то из определенного города
     def get_users(self, limit, offset, city):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -76,6 +79,8 @@ class Database:
         session.close()
         return results
 
+    # Получает список продуктов определенного лимита, начиная с какой либо строки, переданной через пременную offset, и если передан seller,
+    # то от определенного производителя
     def get_products(self, limit, offset, seller):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -88,6 +93,8 @@ class Database:
         session.close()
         return results
 
+    # Получает список заказов определенного лимита, начиная с какой либо строки, переданной через пременную offset, и если передан user_id,
+    # то от определенного пользователя
     def get_orders(self, limit, offset, user_id):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -101,6 +108,7 @@ class Database:
         session.close()
         return results
 
+    # Добавляет юзера в базу данных, передавая имя пользователя, номер телефона, его адрес и электронную почту
     def add_user(self, username, phone, address, email):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -111,6 +119,7 @@ class Database:
         session.close()
         return user
 
+    # Добавляет продукт в базу данных, передавая название, продавца и стоимость
     def add_product(self, name, seller, price):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -121,6 +130,7 @@ class Database:
         session.close()
         return product
 
+    # Добавляет заказ в базу данных, передавая id пользовател, id продукта, который он заказал, и количество
     def add_order(self, user_id, product_id, count):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -139,6 +149,8 @@ class Database:
         session.close()
         return order
 
+    # Изменяет имя пользователя, номер телефона, его адрес и электронную почту по переданному id и возвращает ошибку,
+    # если пользователь не найден
     def update_user(self, user_id, username, phone, address, email):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -155,6 +167,8 @@ class Database:
         session.refresh(user)
         return user
 
+    # Изменяет название, продавца и стоимость по переданному и id возвращает ошибку,
+    # если продукт не найден
     def update_product(self, product_id, name, seller, price):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -170,6 +184,8 @@ class Database:
         session.refresh(product)
         return product
 
+    # Изменяет id пользовател, id продукта и количество по переданному id и возвращает ошибку,
+    # если пользователь не найден
     def update_order(self, order_id, user_id, product_id, count):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -193,6 +209,7 @@ class Database:
         session.refresh(order)
         return order
 
+    # Удаляет пользователя из базы данных по его id, если его нет возвращает ошибку
     def delete_user(self, user_id):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -204,8 +221,10 @@ class Database:
 
         session.delete(user)
         session.commit()
+
         session.close()
 
+    # Удаляет продукт из базы данных по его id, если его нет возвращает ошибку
     def delete_product(self, product_id):
         Session = sessionmaker(self.engine)
         session = Session()
@@ -219,6 +238,7 @@ class Database:
         session.commit()
         session.close()
 
+    # Удаляет заказ из базы данных по его id, если его нет возвращает ошибку
     def delete_order(self, order_id):
         Session = sessionmaker(self.engine)
         session = Session()

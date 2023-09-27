@@ -63,15 +63,15 @@ async def delete_user(user_id: int):
     return db.delete_user(user_id)
 
 @api.delete("/d_product/{product_id}")
-async def delete_user(product_id: int):
-    return db.delete_user(product_id)
+async def delete_product(product_id: int):
+    return db.delete_product(product_id)
 
 @api.delete("/d_order/{order_id}")
-async def delete_user(order_id : int):
-    return db.delete_user(order_id)
+async def delete_order(order_id : int):
+    return db.delete_order(order_id)
 
 if __name__ == '__main__':
-    db.append([],[],[])
+    #db.append([],[],[])
 
     uv.run(
         "api:api",

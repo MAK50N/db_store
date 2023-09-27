@@ -2,3 +2,4 @@ fastapi~=0.103.1
 SQLAlchemy~=2.0.21
 uvicorn~=0.23.2
 pydantic~=2.3.0
+SQLAlchemy-Utils~=0.41.1
