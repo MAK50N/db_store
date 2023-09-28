@@ -4,10 +4,12 @@ from sqlalchemy.orm import sessionmaker
 from tables import Order, User, Product
 from fastapi.responses import JSONResponse
 
+import config
+
 
 class Database:
     def __init__(self):
-        self.DatabaseUri = f"postgresql://postgres:1@localhost:5432/store"
+        self.DatabaseUri = config.database_uri
         self.engine = create_engine(self.DatabaseUri)
 
     # Создае базу данных и таблицы юзеров, продукты и заказов
