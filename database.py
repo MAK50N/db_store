@@ -18,55 +18,9 @@ class Database:
             create_database(self.DatabaseUri)
 
         metadata = MetaData()
-        users_table = Table('users', metadata,
-                            Column("id", Integer, primary_key=True),
-                            Column("username", String),
-                            Column("phone", String),
-                            Column("address", String),
-                            Column("email", String)
-                            )
-
-        product_table = Table('products', metadata,
-                              Column("id", Integer, primary_key=True),
-                              Column("name", String),
-                              Column("seller", String),
-                              Column("price", Float),
-                              )
-
-        order_table = Table('orders', metadata,
-                            Column("id", Integer, primary_key=True),
-                            Column('user_id', Integer, ForeignKey("users.id")),
-                            Column('product_id', Integer, ForeignKey("products.id")),
-                            Column('count', Integer)
-                            )
 
         metadata.drop_all(self.engine)
         metadata.create_all(self.engine)
-
-    def append(self, user_list, product_list, order_list):
-        self.create_database()
-        Session = sessionmaker(self.engine)
-        session = Session()
-
-        user = User(username="Name", phone="11111111", address="idfjhjfsfjhyulksoikf", email="1@gmail.com")
-        session.add(user)
-
-        user_list.append(user)
-
-        prod1 = Product(name="Cheese", seller="Ivanov", price=600)
-        prod2 = Product(name="Milk", seller="Petrov", price=100)
-        session.add_all([prod1, prod2])
-        product_list.append(prod1)
-        product_list.append(prod2)
-
-        order1 = Order(user=user, product=prod1, count=5)
-        order2 = Order(user=user, product=prod2, count=10)
-        order_list.append(order1)
-        order_list.append(order2)
-        session.add_all([order1, order2])
-
-        session.commit()
-        session.close()
 
     # Получает список юзеров определенного лимита, начиная с какой либо строки, и если передан city, переданной через пременную offset,
     # то из определенного города

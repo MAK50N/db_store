@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from database import Database
 import uvicorn as uv
-from pydantic import BaseModel
+from schemas import User, Product, Order
 import logging
 import config
 
@@ -12,17 +12,6 @@ logging.basicConfig(level=logging.DEBUG, filename=config.log_file,
 api = FastAPI()
 
 db = Database()
-
-class User(BaseModel):
-    username: str
-    phone: str
-    address: str
-    email: str
-
-class Product(BaseModel):
-    name: str
-    seller: str
-    price: float
 
 @api.get("/")
 def root():
@@ -49,8 +38,8 @@ def add_product(product: Product):
     return db.add_product(product.name, product.seller, product.price)
 
 @api.post("/order/")
-def add_order(user_id: int, product_id: int, count: int):
-    return db.add_order(user_id, product_id, count)
+def add_order(order: Order):
+    return db.add_order(order.user_id, order.product_id, order.count)
 
 @api.put("/upd_users/{user_id}")
 def update_user(user_id: int, user: User):
@@ -61,8 +50,8 @@ def update_product(product_id: int, product: Product):
     return db.update_product(product_id, product.name, product.seller, product.price)
 
 @api.put("/upd_orders/{order_id}")
-def update_order(order_id: int, user_id: int, product_id: int, count: int):
-    return db.update_order(order_id, user_id, product_id, count)
+def update_order(order_id: int, order: Order):
+    return db.update_order(order_id, order.user_id, order.product_id, order.count)
 
 @api.delete("/d_user/{user_id}")
 def delete_user(user_id: int):
@@ -77,7 +66,7 @@ def delete_order(order_id : int):
     return db.delete_order(order_id)
 
 if __name__ == '__main__':
-    #db.append([],[],[])
+    db.create_database()
 
     uv.run(
         "api:api",
