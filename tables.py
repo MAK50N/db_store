@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
+# Модель таблицы заказов
 class Order(Base):
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True)
@@ -13,7 +14,7 @@ class Order(Base):
     user = relationship("User", backref="orders")
     product = relationship("Product", backref="orders")
 
-
+# Модель таблицы пользователей
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -22,6 +23,7 @@ class User(Base):
     address = Column(String)
     email = Column(String)
 
+# Модель таблицы продуктов
 class Product(Base):
     __tablename__ = "products"
     id = Column(Integer, primary_key=True)
