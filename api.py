@@ -1,11 +1,11 @@
-from fastapi import FastAPI
-from database import Database
-import uvicorn as uv
-from schemas import User, Product, Order
 import logging
+from fastapi import FastAPI
+import uvicorn as uv
+from database import Database
+from schemas import User, Product, Order
 import config
 
-logging.basicConfig(level=logging.DEBUG, filename=config.log_file,
+logging.basicConfig(level=logging.DEBUG, filename=config.LOG_FILE,
                     filemode="a", format='%(asctime)s - %(name)s - '
                     '%(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
