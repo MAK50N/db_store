@@ -27,11 +27,16 @@ class Database:
     def get_users(self, limit, offset, city):
         Session = sessionmaker(self.engine)
         session = Session()
-        results = ''
-        if city:
-            results = session.query(User).filter(User.address.ilike(f"%{city}%")).limit(limit).offset(offset).all()
-        else:
+
+        try:
             results = session.query(User).limit(limit).offset(offset).all()
+        except:
+            JSONResponse(status_code=404, content={'message': "Ошибка"})
+
+        for el in results[:]:
+            if el.address.find("Москва") == -1:
+                results.remove(el)
+
         session.close()
         return results
 
@@ -40,11 +45,16 @@ class Database:
     def get_products(self, limit, offset, seller):
         Session = sessionmaker(self.engine)
         session = Session()
-        results = ''
-        if seller:
-            results = session.query(Product).filter(Product.seller == seller).limit(limit).offset(offset).all()
-        else:
+
+        try:
             results = session.query(Product).limit(limit).offset(offset).all()
+        except:
+            JSONResponse(status_code=404, content={'message': "Ошибка"})
+
+        if seller:
+            for el in results[:]:
+                if el.seller != seller:
+                    results.remove(el)
 
         session.close()
         return results
@@ -55,11 +65,15 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        results = ''
-        if user_id:
-            results = session.query(Order).filter(Order.user_id == user_id).limit(limit).offset(offset).all()
-        else:
+        try:
             results = session.query(Order).limit(limit).offset(offset).all()
+        except:
+            JSONResponse(status_code=404, content={'message': "Ошибка"})
+
+        if user_id:
+            for el in results[:]:
+                if el.user_id != user_id:
+                    results.remove(el)
 
         session.close()
         return results
@@ -91,13 +105,17 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        user = session.query(User).filter(User.id == user_id).first()
-        if user == None:
-            JSONResponse(status_code=404, content={'Пользователь не найден'})
+        try:
+            user = session.query(User).filter(User.id == user_id).first()
+            product = session.query(Product).filter(Product.id == product_id).first()
+        except:
+            JSONResponse(status_code=404, content={"message": 'Ошибка'})
 
-        product = session.query(Product).filter(Product.id == product_id).first()
+        if user == None:
+            JSONResponse(status_code=404, content={"message": 'Пользователь не найден'})
+
         if product == None:
-            JSONResponse(status_code=404, content={'Продукт не найден'})
+            JSONResponse(status_code=404, content={"message": 'Продукт не найден'})
 
         order = Order(user=user, product=product, count=count)
         session.add(order)
@@ -111,9 +129,13 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        user = session.query(User).filter(User.id == user_id).first()
+        try:
+            user = session.query(User).filter(User.id == user_id).first()
+        except:
+            JSONResponse(status_code=404, content={"message": 'Ошибка'})
+
         if user == None:
-            JSONResponse(status_code=404, content={'Пользователь не найден'})
+            JSONResponse(status_code=404, content={"message": 'Пользователь не найден'})
 
         user.username = username
         user.phone = phone
@@ -129,9 +151,13 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        product = session.query(Product).filter(Product.id == product_id).first()
+        try:
+            product = session.query(Product).filter(Product.id == product_id).first()
+        except:
+            JSONResponse(status_code=404, content={"message": 'Ошибка'})
+
         if product == None:
-            JSONResponse(status_code=404, content={'Продукт не найден'})
+            JSONResponse(status_code=404, content={"message": 'Продукт не найден'})
 
         product.name = name
         product.seller = seller
@@ -146,17 +172,21 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        order = session.query(Order).filter(Order.id == order_id).first()
+        try:
+            order = session.query(Order).filter(Order.id == order_id).first()
+            user = session.query(User).filter(User.id == user_id).first()
+            product = session.query(Product).filter(Product.id == product_id).first()
+        except:
+            return JSONResponse(status_code=404, content={"message": 'Ошибка'})
+
         if order == None:
-            return "Заказ не найден"
+            return JSONResponse(status_code=404, content={"message": 'Заказ не найден'})
 
-        user = session.query(User).filter(User.id == user_id).first()
         if user == None:
-            JSONResponse(status_code=404, content={'Пользователь не найден'})
+            JSONResponse(status_code=404, content={"message": 'Пользователь не найден'})
 
-        product = session.query(Product).filter(Product.id == product_id).first()
         if product == None:
-            JSONResponse(status_code=404, content={'Продукт не найден'})
+            JSONResponse(status_code=404, content={"message": 'Продукт не найден'})
 
         order.user = user
         order.product = product
@@ -170,7 +200,10 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        user = session.query(User).filter(User.id == user_id).first()
+        try:
+            user = session.query(User).filter(User.id == user_id).first()
+        except:
+            return JSONResponse(status_code=404, content={"message": 'Ошибка'})
 
         if user == None:
             return JSONResponse(status_code=404, content={"message": "Пользователь не найден"})
@@ -185,10 +218,13 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        product = session.query(Product).filter(Product.id == product_id).first()
+        try:
+            product = session.query(Product).filter(Product.id == product_id).first()
+        except:
+            return JSONResponse(status_code=404, content={"message": "Ошибка"})
 
         if product == None:
-            return JSONResponse(status_code=404, content={"message": "Продукт не найден"})
+            JSONResponse(status_code=404, content={"message": 'Продукт не найден'})
 
         session.delete(product)
         session.commit()
@@ -199,10 +235,13 @@ class Database:
         Session = sessionmaker(self.engine)
         session = Session()
 
-        order = session.query(Order).filter(Order.id == order_id).first()
+        try:
+            order = session.query(Order).filter(Order.id == order_id).first()
+        except:
+            return JSONResponse(status_code=404, content={"message": "Ошибка"})
 
         if order == None:
-            return JSONResponse(status_code=404, content={"message": "Заказ не найден"})
+            JSONResponse(status_code=404, content={"message": 'Заказ не найден'})
 
         session.delete(order)
         session.commit()
